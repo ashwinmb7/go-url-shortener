@@ -24,6 +24,8 @@ go-url-shortener/
 │   └── database.go          # DB connection & initialization
 ├── utils/
 │   └── code.go              # Code generation utility
+├── web/
+│   └── index.html           # Web frontend UI
 └── go.mod                   # Go module file
 ```
 
@@ -41,18 +43,31 @@ go-url-shortener/
    go mod download
    ```
 
-2. **Build the server:**
+2. **Run the server:**
+   ```bash
+   go run ./cmd/server/main.go
+   ```
+
+   Or build and run:
    ```bash
    go build ./cmd/server
    ./server
    ```
 
-   Or run directly:
-   ```bash
-   go run ./cmd/server/main.go
+3. **Access the web interface:**
+   
+   Open your browser and navigate to:
    ```
+   http://localhost:8080
+   ```
+   
+   You'll see a beautiful web interface where you can:
+   - Enter a long URL
+   - Click "Shorten URL" to create a short link
+   - Copy the short URL with one click
+   - Test redirects by visiting the short URL
 
-3. **Test the API:**
+4. **Test the API (alternative to web UI):**
 
    Create a short URL:
    ```bash
@@ -89,15 +104,19 @@ go-url-shortener/
 - [x] Shorten handler (POST /shorten)
 - [x] Redirect handler (GET /:code) with visit tracking
 - [x] Main server setup and routing
+- [x] Web frontend UI (HTML/CSS/JavaScript)
 - [x] Testing and verification
 
 ## Features
 
+- ✅ **Web Interface** — Beautiful, modern UI for shortening URLs
 - ✅ `POST /shorten` — create a short code for a long URL
 - ✅ `GET /:code` — redirect to original URL and increment visits
 - ✅ Persistent storage of mappings and visit counts
 - ✅ Automatic collision handling for short codes
+- ✅ Visit counter tracking
 - ✅ Pure Go implementation (no CGO required)
+- ✅ No npm/build tools required — simple HTML/CSS/JS frontend
 
 ## API Endpoints
 
@@ -123,6 +142,11 @@ Creates a short URL from a long URL.
 Redirects to the original URL and increments the visit counter.
 
 **Response:** HTTP 302 Redirect to the original URL
+
+### GET /
+Serves the web interface for easy URL shortening.
+
+**Response:** HTML page with interactive UI
 
 ## Future Enhancements
 
