@@ -7,7 +7,7 @@ A TinyURL-style URL shortening service built in Go with redirecting, analytics, 
 - Go 1.21+
 - Gin (HTTP router)
 - GORM (ORM)
-- SQLite (default)
+- SQLite (pure Go driver - no CGO required)
 
 ## Project Structure
 
@@ -56,59 +56,81 @@ go-url-shortener/
 
    Create a short URL:
    ```bash
+   # Using curl
    curl -X POST http://localhost:8080/shorten \
      -H "Content-Type: application/json" \
      -d '{"url": "https://example.com/very/long/url"}'
+   
+   # Using PowerShell
+   Invoke-RestMethod -Uri http://localhost:8080/shorten -Method Post -ContentType "application/json" -Body '{"url":"https://example.com"}'
+   ```
+
+   Response:
+   ```json
+   {
+     "code": "Mu4DZ6",
+     "short_url": "http://localhost:8080/Mu4DZ6"
+   }
    ```
 
    Access the short URL:
    ```bash
-   curl http://localhost:8080/abc123
-   # or open in browser - it will redirect
+   # Open in browser or use curl
+   curl http://localhost:8080/Mu4DZ6
+   # Browser will automatically redirect to the original URL
    ```
 
-## Implementation Steps (Learning Guide)
+## Implementation Status
 
-### Step 1: Database Setup ✓
-- [x] Initialize Go module
-- [ ] Complete `database/database.go` - connect to SQLite and run migrations
+### ✅ Completed
+- [x] Database setup with SQLite (pure Go driver)
+- [x] Code generation utility
+- [x] URL model with GORM
+- [x] Shorten handler (POST /shorten)
+- [x] Redirect handler (GET /:code) with visit tracking
+- [x] Main server setup and routing
+- [x] Testing and verification
 
-### Step 2: Code Generation
-- [ ] Complete `utils/code.go` - implement `GenerateCode()` function
+## Features
 
-### Step 3: URL Model
-- [x] Created `models/url.go` with URL struct
-- [ ] Verify GORM tags are correct
+- ✅ `POST /shorten` — create a short code for a long URL
+- ✅ `GET /:code` — redirect to original URL and increment visits
+- ✅ Persistent storage of mappings and visit counts
+- ✅ Automatic collision handling for short codes
+- ✅ Pure Go implementation (no CGO required)
 
-### Step 4: Handlers
-- [ ] Complete `handlers/handlers.go`:
-  - [ ] Implement `Shorten()` - create short URLs
-  - [ ] Implement `Redirect()` - redirect and increment visits
+## API Endpoints
 
-### Step 5: Main Server
-- [ ] Complete `cmd/server/main.go`:
-  - [ ] Initialize database
-  - [ ] Register routes
-  - [ ] Start server
+### POST /shorten
+Creates a short URL from a long URL.
 
-### Step 6: Testing
-- [ ] Test with curl/Postman
-- [ ] Verify redirects work
-- [ ] Verify visit counts increment
+**Request:**
+```json
+{
+  "url": "https://example.com/very/long/url"
+}
+```
 
-## Features (MVP)
+**Response:**
+```json
+{
+  "code": "abc123",
+  "short_url": "http://localhost:8080/abc123"
+}
+```
 
-- ✅ Project structure setup
-- ⏳ `POST /shorten` — create a short code for a long URL
-- ⏳ `GET /:code` — redirect to original URL and increment visits
-- ⏳ Persistent storage of mappings and visit counts
+### GET /:code
+Redirects to the original URL and increments the visit counter.
 
-## Bonus Features (Future)
+**Response:** HTTP 302 Redirect to the original URL
+
+## Future Enhancements
 
 - Rate limiting
 - Custom aliases
 - Expiration dates
 - Admin dashboard
+- Analytics endpoint
 - Dockerfile & compose for easy deployment
 
 ## Learning Resources

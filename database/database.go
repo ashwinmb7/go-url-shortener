@@ -3,7 +3,7 @@ package database
 import (
 	"go-url-shortener/models"
 
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -16,19 +16,24 @@ var DB *gorm.DB
 // 3. Stores the connection in the global DB variable
 func Init() error {
 	var err error
-	
-	// TODO: Connect to SQLite database named "shortener.db"
-	// Use gorm.Open(sqlite.Open("shortener.db"), &gorm.Config{})
-	// Don't forget to handle errors!
-	
-	// TODO: Run AutoMigrate for the models.URL model
+
+	// Connect to SQLite database named "shortener.db"
+	DB, err = gorm.Open(sqlite.Dialector{DSN: "shortener.db"}, &gorm.Config{})
+	if err != nil {
+		return err
+	}
+
+	// Run AutoMigrate for the models.URL model
 	// This creates the table if it doesn't exist
-	
-	return err
+	err = DB.AutoMigrate(&models.URL{})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetDB returns the global database instance
 func GetDB() *gorm.DB {
 	return DB
 }
-
